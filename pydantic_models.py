@@ -41,3 +41,17 @@ class User(BaseModel):
 
 class UserInDB(User):
     hashed_password: str
+
+
+# TODO APP MODELS
+class TodoPayload(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    completed: bool | None = False
+
+    class Config:
+        from_attributes = True
+
+
+class Todo(TodoPayload):
+    id: int | None = None
