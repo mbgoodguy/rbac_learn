@@ -15,3 +15,10 @@ incorrect_access_rights = HTTPException(
     status_code=status.HTTP_403_FORBIDDEN,
     detail="Not correct access rights"
 )
+
+
+def raise_not_exist(pk: int):
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"Todo with id {pk} does not exist"
+    )
