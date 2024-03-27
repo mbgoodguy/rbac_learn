@@ -22,11 +22,12 @@ class DB_Settings:
     DB_PORT = os.getenv('DB_PORT')
     DB_NAME = os.getenv('DB_NAME')
 
-    DB_URL = f'postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+    DB_PSYCOPG2_URL = f'postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+    DB_URL = f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 
 
 settings = DB_Settings()
-engine = create_engine(url=settings.DB_URL, echo=True)
+engine = create_engine(url=settings.DB_PSYCOPG2_URL, echo=True)
 
 
 def db_session_method(method):
@@ -37,7 +38,7 @@ def db_session_method(method):
 
 
 class TodoTools:
-    engine = create_engine(url=settings.DB_URL, echo=True)
+    engine = create_engine(url=settings.DB_PSYCOPG2_URL, echo=True)
     session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
     @classmethod
