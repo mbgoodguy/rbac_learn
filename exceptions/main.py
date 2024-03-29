@@ -1,12 +1,22 @@
+from typing import Union
+
 import uvicorn
 from fastapi import HTTPException, FastAPI
+from fastapi.exceptions import RequestValidationError
+from pydantic import BaseModel, field_validator
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from exceptions import CustomExceptionA, CustomExceptionB, CustomExceptionC, custom_exception_c_handler
+from exceptions import CustomExceptionA, CustomExceptionB, CustomExceptionC, custom_exception_c_handler, \
+    custom_http_exception_handler, custom_request_validation_exception_handler, value_error_handler
 
 app = FastAPI()
+
+# Обработчики исключений
 app.add_exception_handler(CustomExceptionC, custom_exception_c_handler)
+app.add_exception_handler(HTTPException, custom_http_exception_handler)
+app.add_exception_handler(RequestValidationError, custom_request_validation_exception_handler)
+app.add_exception_handler(ValueError, value_error_handler)
 
 
 # @app.exception_handler(Exception)
@@ -34,7 +44,7 @@ async def custom_exception_b_handler(request: Request, exc: CustomExceptionB):
 
 @app.get("/root")
 async def main():
-    res = 1 / 0  # здесь сработает global_exception_handler если раскоментирован
+    res = 1 / 0  # сработает global_exception_handler если раскоментирован
     return {'msg': 'OK'}
 
 
@@ -57,6 +67,28 @@ async def check_custom_exc_c(pk: int):
     if pk == 3:
         raise CustomExceptionC()
     return {'msg': 'OK'}
+
+
+class Item(BaseModel):
+    name: str
+    description: Union[str, None] = None
+    price: float
+    tax: Union[float, None] = None
+
+
+@app.post("/items/")
+async def create_item(item: Item):
+
+    # if item.price < 0:
+    #     # сработает custom_http_exception_handler
+    #     raise HTTPException(status_code=400, detail="Price must be non-negative")
+
+    try:
+        if item.price < 0:
+            raise ValueError('Price must be non-negative')
+    except ValueError as ve:
+        raise ve  # сработает global_exception_handler если раскоментирован
+    return {"message": "Item created successfully", "item": item}
 
 
 if __name__ == '__main__':

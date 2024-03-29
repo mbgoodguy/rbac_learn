@@ -20,3 +20,27 @@ def custom_exception_c_handler(request: Request, exc: Exception | ErrorResponseM
             "additional": exc.additional,
         },
     )
+
+
+# обработчик всех исключений типа HTTPException
+async def custom_http_exception_handler(request, exc):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"error": str(exc)},
+    )
+
+
+# обработчик ошибок синтаксиса в теле запроса - тип RequestValidationError ( Pydantic 422 Unprocessable Entity )
+async def custom_request_validation_exception_handler(request, exc):
+    return JSONResponse(
+        status_code=422,
+        content={"message": "Custom Request Validation Error", "errors": exc.errors()},
+    )
+
+
+# обработчик исключений типа ValueError
+async def value_error_handler(request, exc):
+    return JSONResponse(
+        status_code=400,
+        content={'error': str(exc)}
+    )
