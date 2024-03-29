@@ -18,6 +18,9 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+# EXCEPTION HANDLERS
+
+
 # URL для PostgreSQL
 database = Database(settings.DB_URL)
 
@@ -52,6 +55,9 @@ async def create_user(user: UserCreate):
 async def get_user(user_id: int):
     query = 'SELECT * FROM users WHERE id = :user_id'
     values = {'user_id': user_id}
+    # if user_id == 40:
+    #     raise Exception('User with id 40 does not exist')
+
     try:
         result = await database.fetch_one(query=query, values=values)
     except Exception as e:

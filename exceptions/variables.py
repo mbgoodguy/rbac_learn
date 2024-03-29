@@ -22,3 +22,7 @@ def raise_not_exist(pk: int):
         status_code=status.HTTP_404_NOT_FOUND,
         detail=f"Todo with id {pk} does not exist"
     )
+
+
+
+

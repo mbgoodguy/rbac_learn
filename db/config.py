@@ -7,8 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from db.models import TodoTable, Base
-from exceptions import raise_not_exist
-from pydantic_models import TodoPayload, Todo
+from pydantic_models import TodoPayload
 
 dotenv_path = Path(__file__).parent.parent / '.env'
 
@@ -69,7 +68,7 @@ class TodoTools:
             db.commit()
             return f'Todo with id {pk} deleted'
         else:
-            raise_not_exist(pk)
+            raise Exception(f'Todo with id {pk} does not exist')
 
     @classmethod
     @db_session_method
@@ -83,7 +82,7 @@ class TodoTools:
             db.commit()
             return f'Todo with id {pk} updated'
         else:
-            raise_not_exist(pk)
+            raise Exception(f'Todo with id {pk} does not exist')
 
     @classmethod
     @contextmanager
