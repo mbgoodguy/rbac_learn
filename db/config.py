@@ -3,8 +3,9 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from dotenv import load_dotenv
+from fastapi import HTTPException
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 
 from db.models import TodoTable, Base
 from pydantic_models import TodoPayload
@@ -33,6 +34,7 @@ def db_session_method(method):
     def wrapper(cls, *args, **kwargs):
         with cls.get_db_session() as db:
             return method(cls, db, *args, **kwargs)
+
     return wrapper
 
 
@@ -57,7 +59,9 @@ class TodoTools:
     @classmethod
     @db_session_method
     def get_all_todos(cls, db):
-        return db.query(TodoTable).all()
+        res = db.query(TodoTable).all()
+        print(res)
+        return res
 
     @classmethod
     @db_session_method
@@ -83,6 +87,12 @@ class TodoTools:
             return f'Todo with id {pk} updated'
         else:
             raise Exception(f'Todo with id {pk} does not exist')
+
+    @classmethod
+    @db_session_method
+    def get_todo(cls, db: Session, pk: int):
+        todo = db.get(TodoTable, pk)
+        return todo
 
     @classmethod
     @contextmanager
