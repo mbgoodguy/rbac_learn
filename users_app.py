@@ -98,4 +98,4 @@ async def delete_user(user_id: int, user: UserCreate):
 
 
 if __name__ == '__main__':
-    uvicorn.run('main_3:app', reload=True)
+    uvicorn.run('users_app:app', reload=True)
